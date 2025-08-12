@@ -19,8 +19,9 @@ func handlerReadiness(writer http.ResponseWriter, req *http.Request) {
 func (cfg *apiConfig) handlerCount(w http.ResponseWriter, r *http.Request) {
 	count := cfg.fileserverHits.Load()
 
-	fmt.Fprintf(w, "Hits: %v", count)
+	fmt.Fprintf(w, "<html>\n  <body>\n    <h1>Welcome, Chirpy Admin</h1>\n    <p>Chirpy has been visited %d times!</p>\n  </body>\n</html>", count)
 	w.WriteHeader(http.StatusOK)
+	w.Header().Add("Content-Type", "text/html")
 }
 
 func (cfg *apiConfig) handlerReset(w http.ResponseWriter, r *http.Request) {
@@ -48,9 +49,9 @@ func main() {
 
 	filepathRoot := "/home/siege/workspace/Go/chirpy/"
 
-	mux.HandleFunc("/healthz", handlerReadiness)
-	mux.HandleFunc("/metrics", cfg.handlerCount)
-	mux.HandleFunc("/reset", cfg.handlerReset)
+	mux.HandleFunc("GET /api/healthz", handlerReadiness)
+	mux.HandleFunc("GET /admin/metrics", cfg.handlerCount)
+	mux.HandleFunc("POST /admin/reset", cfg.handlerReset)
 
 	mux.Handle("/app/", cfg.middlewareMetricsInc(http.StripPrefix("/app", http.FileServer(http.Dir(filepathRoot)))))
 
