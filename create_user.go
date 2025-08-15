@@ -22,13 +22,20 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	user, err := cfg.queries.CreateUser(r.Context(), dat.Email)
+	db_user, err := cfg.queries.CreateUser(r.Context(), dat.Email)
 	if err != nil {
 		err = respondWithError(w, 500, "Failed to create user")
 		if err != nil {
 			fmt.Println("Failed to respond")
 		}
 		return
+	}
+
+	user := User{
+		ID:        db_user.ID,
+		CreatedAt: db_user.CreatedAt,
+		UpdatedAt: db_user.UpdatedAt,
+		Email:     db_user.Email,
 	}
 
 	err = respondWithJSON(w, 201, user)
