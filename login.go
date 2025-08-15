@@ -6,10 +6,9 @@ import (
 	"net/http"
 
 	"github.com/GitSiege7/chirpy/internal/auth"
-	"github.com/GitSiege7/chirpy/internal/database"
 )
 
-func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) {
+func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 	type req struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -26,21 +25,18 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	hash, err := auth.HashPassword(dat.Password)
+	db_user, err := cfg.queries.GetUserByEmail(r.Context(), dat.Email)
 	if err != nil {
-		err = respondWithError(w, 500, "Failed to hash password")
+		err = respondWithError(w, 404, "User not found")
 		if err != nil {
 			fmt.Println("Failed to respond")
 		}
 		return
 	}
 
-	db_user, err := cfg.queries.CreateUser(r.Context(), database.CreateUserParams{
-		Email:          dat.Email,
-		HashedPassword: hash,
-	})
+	err = auth.CheckPasswordHash(dat.Password, db_user.HashedPassword)
 	if err != nil {
-		err = respondWithError(w, 500, "Failed to create user")
+		err = respondWithError(w, 401, "Unauthorized: incorrect password")
 		if err != nil {
 			fmt.Println("Failed to respond")
 		}
@@ -54,7 +50,7 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 		Email:     db_user.Email,
 	}
 
-	err = respondWithJSON(w, 201, user)
+	err = respondWithJSON(w, 200, user)
 	if err != nil {
 		fmt.Println("Failed to respond")
 	}
