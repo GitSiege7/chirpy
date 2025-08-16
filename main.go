@@ -18,6 +18,7 @@ type apiConfig struct {
 	fileserverHits atomic.Int32
 	queries        *database.Queries
 	platform       string
+	secret         string
 }
 
 type User struct {
@@ -31,6 +32,7 @@ func main() {
 	godotenv.Load()
 	dbURL := os.Getenv("DB_URL")
 	pf := os.Getenv("PLATFORM")
+	secret := os.Getenv("SECRET")
 
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
@@ -45,7 +47,7 @@ func main() {
 		Addr:    ":8080",
 	}
 
-	cfg := &apiConfig{queries: dbQueries, platform: pf}
+	cfg := &apiConfig{queries: dbQueries, platform: pf, secret: secret}
 	cfg.fileserverHits.Store(0)
 
 	filepathRoot := "/home/siege/workspace/Go/chirpy/"

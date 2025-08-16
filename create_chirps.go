@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/GitSiege7/chirpy/internal/auth"
 	"github.com/GitSiege7/chirpy/internal/database"
 	"github.com/google/uuid"
 )
@@ -21,8 +22,7 @@ type Chirp struct {
 
 func (cfg *apiConfig) handlerCreateChirps(w http.ResponseWriter, r *http.Request) {
 	type req struct {
-		Body   string    `json:"body"`
-		UserID uuid.UUID `json:"user_id"`
+		Body string `json:"body"`
 	}
 	post := req{}
 
@@ -30,6 +30,26 @@ func (cfg *apiConfig) handlerCreateChirps(w http.ResponseWriter, r *http.Request
 	err := decoder.Decode(&post)
 	if err != nil {
 		err = respondWithError(w, 500, "Failed to decode")
+		if err != nil {
+			fmt.Println("Failed to respond")
+		}
+		return
+	}
+
+	jwt, err := auth.GetBearerToken(r.Header)
+	if err != nil {
+		err = respondWithError(w, 401, "No authorizing token found")
+		if err != nil {
+			fmt.Println("Failed to respond")
+		}
+		return
+	}
+
+	UUID, err := auth.ValidateJWT(jwt, cfg.secret)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+
+		err = respondWithError(w, 401, "Unauthorized")
 		if err != nil {
 			fmt.Println("Failed to respond")
 		}
@@ -54,7 +74,7 @@ func (cfg *apiConfig) handlerCreateChirps(w http.ResponseWriter, r *http.Request
 
 		db_chirp, err := cfg.queries.CreateChirp(r.Context(), database.CreateChirpParams{
 			Body:   cleaned,
-			UserID: post.UserID,
+			UserID: UUID,
 		})
 		if err != nil {
 			err = respondWithError(w, 500, "Failed to create chirp")
