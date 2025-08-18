@@ -17,6 +17,6 @@ func respondWithJSON(w http.ResponseWriter, code int, dat interface{}) error {
 	return nil
 }
 
-func respondWithError(w http.ResponseWriter, code int, msg string) error {
-	return respondWithJSON(w, code, map[string]string{"error": msg})
+func respondWithError(w http.ResponseWriter, code int, msg string) {
+	respondWithJSON(w, code, map[string]string{"error": msg})
 }

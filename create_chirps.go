@@ -29,19 +29,13 @@ func (cfg *apiConfig) handlerCreateChirps(w http.ResponseWriter, r *http.Request
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&post)
 	if err != nil {
-		err = respondWithError(w, 500, "Failed to decode")
-		if err != nil {
-			fmt.Println("Failed to respond")
-		}
+		respondWithError(w, 500, "Failed to decode")
 		return
 	}
 
 	jwt, err := auth.GetBearerToken(r.Header)
 	if err != nil {
-		err = respondWithError(w, 401, "No authorizing token found")
-		if err != nil {
-			fmt.Println("Failed to respond")
-		}
+		respondWithError(w, 401, "No authorizing token found")
 		return
 	}
 
@@ -49,18 +43,12 @@ func (cfg *apiConfig) handlerCreateChirps(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 
-		err = respondWithError(w, 401, "Unauthorized")
-		if err != nil {
-			fmt.Println("Failed to respond")
-		}
+		respondWithError(w, 401, "Unauthorized")
 		return
 	}
 
 	if len(post.Body) > 140 {
-		err := respondWithError(w, 400, "Chirp is too long")
-		if err != nil {
-			fmt.Println("Failed to respond")
-		}
+		respondWithError(w, 400, "Chirp is too long")
 		return
 	} else {
 		words := strings.Split(post.Body, " ")
@@ -77,10 +65,7 @@ func (cfg *apiConfig) handlerCreateChirps(w http.ResponseWriter, r *http.Request
 			UserID: UUID,
 		})
 		if err != nil {
-			err = respondWithError(w, 500, "Failed to create chirp")
-			if err != nil {
-				fmt.Println("Failed to respond")
-			}
+			respondWithError(w, 500, "Failed to create chirp")
 			return
 		}
 

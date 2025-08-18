@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -13,7 +12,7 @@ func TestMakeAndValidateJWT(t *testing.T) {
 	UUID := uuid.New()
 	tokenSecret := "supersecretstring"
 
-	jwt, err := MakeJWT(UUID, tokenSecret, 5*time.Second)
+	jwt, err := MakeJWT(UUID, tokenSecret)
 	if err != nil {
 		fmt.Println("Failed to make JWT")
 		t.Fail()
@@ -36,7 +35,7 @@ func TestGetBearerToken(t *testing.T) {
 	header := http.Header{}
 	UUID := uuid.New()
 
-	jwt, err := MakeJWT(UUID, "IzstEIf0C5YVYQ539dqglVtD+ZMZN4GYcOP4r6AgHb/q+zrBW3lhtvQdgTz850Vt0OSCiFgGOC23tevYbT14ug==", 5*time.Minute)
+	jwt, err := MakeJWT(UUID, "IzstEIf0C5YVYQ539dqglVtD+ZMZN4GYcOP4r6AgHb/q+zrBW3lhtvQdgTz850Vt0OSCiFgGOC23tevYbT14ug==")
 	if err != nil {
 		fmt.Println("Failed to make jwt")
 		t.Fail()

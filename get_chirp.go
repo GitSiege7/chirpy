@@ -12,19 +12,13 @@ func (cfg *apiConfig) handlerGetChirp(w http.ResponseWriter, r *http.Request) {
 
 	id, err := uuid.Parse(chirp_id)
 	if err != nil {
-		err = respondWithError(w, 400, "Invalid ID")
-		if err != nil {
-			fmt.Println("Failed to respond")
-		}
+		respondWithError(w, 400, "Invalid ID")
 		return
 	}
 
 	db_chirp, err := cfg.queries.GetChirpByID(r.Context(), id)
 	if err != nil {
-		err = respondWithError(w, 404, "Chirp not found")
-		if err != nil {
-			fmt.Println("Failed to respond")
-		}
+		respondWithError(w, 404, "Chirp not found")
 		return
 	}
 
