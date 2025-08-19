@@ -19,13 +19,15 @@ type apiConfig struct {
 	queries        *database.Queries
 	platform       string
 	secret         string
+	apiKey         string
 }
 
 type User struct {
-	ID        uuid.UUID `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	Email     string    `json:"email"`
+	ID          uuid.UUID `json:"id"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	Email       string    `json:"email"`
+	IsChirpyRed bool      `json:"is_chirpy_red"`
 }
 
 func main() {
@@ -33,6 +35,7 @@ func main() {
 	dbURL := os.Getenv("DB_URL")
 	pf := os.Getenv("PLATFORM")
 	secret := os.Getenv("SECRET")
+	api_key := os.Getenv("API_SECRET")
 
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
@@ -47,7 +50,7 @@ func main() {
 		Addr:    ":8080",
 	}
 
-	cfg := &apiConfig{queries: dbQueries, platform: pf, secret: secret}
+	cfg := &apiConfig{queries: dbQueries, platform: pf, secret: secret, apiKey: api_key}
 	cfg.fileserverHits.Store(0)
 
 	filepathRoot := "/home/siege/workspace/Go/chirpy/"
@@ -64,6 +67,7 @@ func main() {
 	mux.HandleFunc("POST /api/revoke", cfg.handlerRevoke)
 	mux.HandleFunc("PUT /api/users", cfg.handlerUpdate)
 	mux.HandleFunc("DELETE /api/chirps/{chirpID}", cfg.handlerDeleteChirp)
+	mux.HandleFunc("POST /api/polka/webhooks", cfg.handlerUpgrade)
 
 	mux.Handle("/app/", cfg.middlewareMetricsInc(http.StripPrefix("/app", http.FileServer(http.Dir(filepathRoot)))))
 

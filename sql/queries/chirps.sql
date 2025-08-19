@@ -20,3 +20,8 @@ where chirps.id = $1;
 -- name: DeleteChirp :exec
 delete from chirps
 where chirps.id = $1;
+
+-- name: GetChirpsByUser :many
+select * from chirps
+where chirps.user_id = $1
+order by chirps.created_at asc;

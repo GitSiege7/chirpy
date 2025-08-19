@@ -19,6 +19,7 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 		Email        string    `json:"email"`
 		Token        string    `json:"token"`
 		RefreshToken string    `json:"refresh_token"`
+		IsChirpyRed  bool      `json:"is_chirpy_red"`
 	}
 
 	type req struct {
@@ -77,6 +78,7 @@ func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 		Email:        db_user.Email,
 		Token:        jwt,
 		RefreshToken: ref,
+		IsChirpyRed:  db_user.IsChirpyRed.Bool,
 	}
 
 	err = respondWithJSON(w, 200, res)
