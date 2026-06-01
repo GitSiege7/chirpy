@@ -11,5 +11,8 @@ SQLC is used to convert SQL queries into Go code, allowing the Go backend to que
 #### HTTP Server
 Golang's HTTP Server is used to serve requests for its compact and simplistic, yet highly efficient capabilities.
 
+#### JWT
+For session management, Chirpy uses JSON Web Tokens and Golang's `JWT` package.
+
 #### Boot.dev
 This is a guided project from Boot.dev, an online backend coding course; however, I designed, implemented, and wrote all of the code myself with very little help beyond broad direction and I have a strong understanding of its functionality.
